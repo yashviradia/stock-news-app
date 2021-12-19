@@ -1,11 +1,15 @@
 import requests
-from datetime import datetime
+from datetime import date
 from dotenv import load_dotenv, find_dotenv
 import os
 from twilio.rest import Client
 
 load_dotenv(find_dotenv())
 
+todays_date = date.today()
+CURRENT_YEAR = todays_date.year
+CURRENT_MONTH = todays_date.month
+CURRENT_DAY = todays_date.day
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla"
 
@@ -23,8 +27,11 @@ stock_price_response = requests.get(AV_Endpoint, params=AV_parameters)
 stock_price_response.raise_for_status()
 stock_price_data = stock_price_response.json()
 
-gestern_stock_price = stock_price_data["Time Series (Daily)"]["2021-12-17"]["4. close"]
-vorgestern_stock_price = stock_price_data["Time Series (Daily)"]["2021-12-16"]["4. close"]
+# Problem: how to apply it for all cases
+# and not only for two particular days?
+
+gestern_stock_price = stock_price_data["Time Series (Daily)"][f"{CURRENT_YEAR}-{CURRENT_MONTH}-{CURRENT_DAY-1}"]["4. close"]
+vorgestern_stock_price = stock_price_data["Time Series (Daily)"][f"{CURRENT_YEAR}-{CURRENT_MONTH}-{CURRENT_DAY-1}"]["4. close"]
 difference_stock_price = int(float(gestern_stock_price) - float(vorgestern_stock_price))
 percentage_change = round((difference_stock_price / float(gestern_stock_price)) * 100, 2)
 
